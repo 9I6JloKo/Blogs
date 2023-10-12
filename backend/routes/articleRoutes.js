@@ -80,35 +80,12 @@ module.exports = router;
  *                   type: integer
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       500:
  *         description: Internal server error
- * components:
- *   schemas:
- *     Article:
- *       type: object
- *       properties:
- *         slug:
- *           type: string
- *         title:
- *           type: string
- *         body:
- *           type: string
- *         author:
- *           type: string
- *         createdAt:
- *           type: string
- *         updatedAt:
- *           type: string
- *         tagList:
- *           type: array
- *           items:
- *             type: string
- *         description:
- *           type: string
- * 
- * tags:
- *   - name: Articles
- *     description: API for managing articles
+ *     security:
+ *       - JWTAuth: []
  */
 
 

@@ -5,7 +5,17 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const corsOptions = require('./backend/config/corsOptions');
 const connectDB = require('./backend/config/database');
+const fs = require('fs');
+const https = require('https'); // Import the https module
 connectDB();
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/jvm.serveftp.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/jvm.serveftp.com/fullchain.pem', 'utf8');
+
+const credentials = {
+  key: privateKey,
+  cert: certificate
+};
 
 
 app.use(cors(corsOptions)); //Cors security, users cannot send requests to not allowed cors options.
@@ -51,7 +61,7 @@ const options = {
     },
       servers: [
           {
-          url: "http://localhost:3000",
+          url: "https://jvm.serveftp.com",
           },
       ],
       },
@@ -59,15 +69,24 @@ const options = {
 };
 
 const specs = swaggerJsdoc(options);
+
+const httpsServer = https.createServer(credentials, app);
+
 app.use(
     "/api-docs",
     swaggerUi.serve,
     swaggerUi.setup(specs, { explorer: true }, )
 );
-// http://localhost:3000/api-docs
+// https://localhost:3000/api-docs
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`)
 })
+
+// Start the HTTPS server
+httpsServer.listen(3001, () => {
+  console.log(`HTTPS Server is running on port ${3001}`);
+});
+
 mongoose.connection.on('error', err => {
   console.log(err);
 })
